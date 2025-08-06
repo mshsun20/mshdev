@@ -30,5 +30,46 @@ const read = async (req, res) => {
     }
 }
 
+const readById = async (req, res) => {
+    try {
+        const accid = req.params.id
+        const qry = `select * from accounts where accounts.acc_id='${accid}'`
+        const [Acc] = await conn.query(qry)
+        res.status(200).json({ message: `Account data created successfully`, statuscode: 200, data: Acc })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: `Internal Server Error.`, statuscode: 500 })
+    }
+}
 
-export default { create, read }
+const update = async (req, res) => {
+    try {
+        const accid = req.params.id
+        const { acc_uname, acc_pass, acc_fname, acc_eml, acc_phn } = req.body
+        const qry = `update accounts set acc_uname='${acc_uname}', acc_pass='${acc_pass}', acc_fname='${acc_fname}', acc_eml='${acc_eml}', acc_phn='${acc_phn}' where accounts.acc_id='${accid}'`
+
+        const [AccUpdt] = await conn.query(qry)
+        if (AccUpdt) res.status(201).json({ message: `Account data created successfully.`, statuscode: 201, data: AccUpdt })
+        else res.status(401).json({ message: `Account update failed.`, statuscode: 401 })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: `Internal Server Error.`, statuscode: 500 })
+    }
+}
+
+const remove = async (req, res) => {
+    try {
+        const accid = req.params.id
+        const qry = `delete accounts where accounts.acc_id='${accid}'`
+
+        const [AccDlt] = await conn.query(qry)
+        if (AccDlt) res.status(201).json({ message: `Account removed successfully.`, statuscode: 201, data: AccDlt })
+        else res.status(401).json({ message: `Account removal failed.`, statuscode: 401 })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ message: `Internal Server Error.`, statuscode: 500 })
+    }
+}
+
+
+export default { create, read, readById, update, remove }
